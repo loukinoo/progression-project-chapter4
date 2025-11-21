@@ -17,6 +17,13 @@ public class User {
 		this.name = name;
 	}
 
+	public User(boolean isAdmin, String name) {
+		super();
+		this.isAdmin = isAdmin;
+		this.name = name;
+	}
+
+	
 	public boolean isAdmin() {
 		return isAdmin;
 	}

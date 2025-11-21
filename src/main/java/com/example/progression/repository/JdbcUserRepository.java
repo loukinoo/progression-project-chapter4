@@ -19,8 +19,8 @@ public class JdbcUserRepository implements IUserRepository {
 
 	@Override
 	public int save(User user) {
-		return jdbcTemplate.update("INSERT INTO users (\"ID\", is_admin, \"name\") VALUES (?, ?, ?)", 
-				new Object[] {user.getId(), user.isAdmin(), user.getName()});
+		return jdbcTemplate.update("INSERT INTO users (is_admin, \"name\") VALUES (?, ?, ?)", 
+				new Object[] {user.isAdmin(), user.getName()});
 	}
 
 	@Override
