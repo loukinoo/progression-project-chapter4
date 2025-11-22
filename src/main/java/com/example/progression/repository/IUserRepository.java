@@ -2,11 +2,12 @@ package com.example.progression.repository;
 
 import java.util.List;
 
+import com.example.progression.dto.UserDTO;
 import com.example.progression.model.User;
 
 public interface IUserRepository {
 	
-	int save(User user);
+	int save(UserDTO user);
 	
 	int update(User user);
 	

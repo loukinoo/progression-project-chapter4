@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
+import com.example.progression.dto.UserDTO;
 import com.example.progression.model.User;
 import com.example.progression.repository.JdbcUserRepository;
 
@@ -50,17 +52,17 @@ public class UserServices {
 	}
 	
 	//POST methods
-	public ResponseEntity<String> createUser(User user){
+	public ResponseEntity<String> createUser(UserDTO user){
 		try {
-			repository.save(new User(user.isAdmin(), user.getName()));
+			repository.save(user);
 			return new ResponseEntity<>("User created succesfully", HttpStatus.CREATED);
 		} catch (Exception e) {
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 	
 	//PUT methods
-	public ResponseEntity<String> updateUser(long id, User input) {
+	public ResponseEntity<String> updateUser(long id, UserDTO input) {
 		User toUpdate = repository.findById(id);
 		
 		if (toUpdate!=null) {

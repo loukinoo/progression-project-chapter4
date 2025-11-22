@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.progression.dto.UserDTO;
 import com.example.progression.model.User;
 import com.example.progression.service.UserServices;
 
@@ -41,12 +42,12 @@ public class UserController {
 	}
 	
 	@PostMapping
-	public ResponseEntity<String> createUser(@RequestBody User user) {
+	public ResponseEntity<String> createUser(@RequestBody UserDTO user) {
 		return userServices.createUser(user);
 	}
 	
 	@PutMapping("/{id}")
-	public ResponseEntity<String> updateUser(@PathVariable Long id, @RequestBody User user){
+	public ResponseEntity<String> updateUser(@PathVariable Long id, @RequestBody UserDTO user){
 		return userServices.updateUser(id, user);
 	}
 	

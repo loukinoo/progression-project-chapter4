@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import com.example.progression.dto.UserDTO;
 import com.example.progression.model.User;
 
 @Repository
@@ -18,14 +19,14 @@ public class JdbcUserRepository implements IUserRepository {
 	
 
 	@Override
-	public int save(User user) {
-		return jdbcTemplate.update("INSERT INTO users (is_admin, name) VALUES (?, ?)", 
+	public int save(UserDTO user) {
+		return jdbcTemplate.update("INSERT INTO users (admin, name) VALUES (?, ?)", 
 				new Object[] {user.isAdmin(), user.getName()});
 	}
 
 	@Override
 	public int update(User user) {
-		return jdbcTemplate.update("UPDATE users SET is_admin=?, name=? WHERE id=?", 
+		return jdbcTemplate.update("UPDATE users SET admin=?, name=? WHERE id=?", 
 				new Object[] {user.isAdmin(), user.getName(), user.getId()});
 	}
 
