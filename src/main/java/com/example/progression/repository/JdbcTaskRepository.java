@@ -19,7 +19,7 @@ public class JdbcTaskRepository implements ITaskRepository {
 	@Override
 	public int save(Task task) {
 		return jdbcTemplate.update("INSERT INTO tasks (user_id, completed, assigned, assignment)"
-				+ " VALUES (?, ?, ?)", 
+				+ " VALUES (?, ?, ?, ?)", 
 				new Object[] {task.getUserId(), task.isCompleted(), task.isAssigned(), task.getAssignment()});
 		}
 

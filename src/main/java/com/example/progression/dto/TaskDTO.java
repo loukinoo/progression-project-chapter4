@@ -1,20 +1,18 @@
-package com.example.progression.model;
+package com.example.progression.dto;
 
-public class Task {
-	
-	private long taskId;
+public class TaskDTO {
+
 	private long userId;
 	private boolean completed;
 	private boolean assigned;
 	private String assignment;
 	
-	public Task() {
+	public TaskDTO() {
 		
 	}
 
-	public Task(long taskId, long userId, boolean completed, boolean assigned, String assignment) {
+	public TaskDTO(long userId, boolean completed, boolean assigned, String assignment) {
 		super();
-		this.taskId = taskId;
 		this.userId = userId;
 		this.completed = completed;
 		this.assigned = assigned;
@@ -53,18 +51,9 @@ public class Task {
 		this.assignment = assignment;
 	}
 
-	public long getTaskId() {
-		return taskId;
-	}
-	
-	public void setTaskId(long taskId) {
-		this.taskId = taskId;
-	}
-
 	@Override
 	public String toString() {
-		return "Task [taskId=" + taskId + ", userId=" + userId + ", completed=" + completed + ", assigned=" + assigned
+		return "Task [userId=" + userId + ", completed=" + completed + ", assigned=" + assigned
 				+ ", assignment=" + assignment + "]";
 	}
-
 }
