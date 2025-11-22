@@ -19,13 +19,13 @@ public class JdbcUserRepository implements IUserRepository {
 
 	@Override
 	public int save(User user) {
-		return jdbcTemplate.update("INSERT INTO users (is_admin, \"name\") VALUES (?, ?, ?)", 
+		return jdbcTemplate.update("INSERT INTO users (is_admin, name) VALUES (?, ?)", 
 				new Object[] {user.isAdmin(), user.getName()});
 	}
 
 	@Override
 	public int update(User user) {
-		return jdbcTemplate.update("UPDATE users SET is_admin=?, \"name\"=? WHERE id=?", 
+		return jdbcTemplate.update("UPDATE users SET is_admin=?, name=? WHERE id=?", 
 				new Object[] {user.isAdmin(), user.getName(), user.getId()});
 	}
 
