@@ -54,7 +54,7 @@ public class JdbcUserRepository implements IUserRepository {
 
 	@Override
 	public List<User> findByRole(boolean isAdmin) {
-		return jdbcTemplate.query("SELECT * FROM users WHERE is_admin=?", 
+		return jdbcTemplate.query("SELECT * FROM users WHERE admin=?", 
 				BeanPropertyRowMapper.newInstance(User.class), isAdmin);
 	}
 
