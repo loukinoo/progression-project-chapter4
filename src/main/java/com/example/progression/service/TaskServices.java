@@ -5,11 +5,13 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 
 import com.example.progression.dto.TaskDTO;
 import com.example.progression.model.Task;
 import com.example.progression.repository.JdbcTaskRepository;
 
+@Service
 public class TaskServices {
 
 	@Autowired
