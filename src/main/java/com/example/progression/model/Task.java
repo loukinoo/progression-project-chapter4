@@ -2,8 +2,8 @@ package com.example.progression.model;
 
 public class Task {
 	
-	private long task_id;
-	private long user_id;
+	private long taskId;
+	private long userId;
 	private boolean completed;
 	private boolean assigned;
 	private String assignment;
@@ -12,29 +12,29 @@ public class Task {
 		
 	}
 
-	public Task(long task_id, long user_id, boolean completed, boolean assigned, String assignment) {
+	public Task(long taskId, long userId, boolean completed, boolean assigned, String assignment) {
 		super();
-		this.task_id = task_id;
-		this.user_id = user_id;
+		this.taskId = taskId;
+		this.userId = userId;
 		this.completed = completed;
 		this.assigned = assigned;
 		this.assignment = assignment;
 	}
 
-	public Task(long user_id, boolean completed, boolean assigned, String assignment) {
+	public Task(long userId, boolean completed, boolean assigned, String assignment) {
 		super();
-		this.user_id = user_id;
+		this.userId = userId;
 		this.completed = completed;
 		this.assigned = assigned;
 		this.assignment = assignment;
 	}
 	
 	public long getUserId() {
-		return user_id;
+		return userId;
 	}
 
-	public void setUserId(long user_id) {
-		this.user_id = user_id;
+	public void setUserId(long userId) {
+		this.userId = userId;
 	}
 
 	public boolean isCompleted() {
@@ -62,12 +62,16 @@ public class Task {
 	}
 
 	public long getTaskId() {
-		return task_id;
+		return taskId;
+	}
+	
+	public void setTaskId(long taskId) {
+		this.taskId = taskId;
 	}
 
 	@Override
 	public String toString() {
-		return "Task [task_id=" + task_id + ", user_id=" + user_id + ", completed=" + completed + ", assigned=" + assigned
+		return "Task [taskId=" + taskId + ", userId=" + userId + ", completed=" + completed + ", assigned=" + assigned
 				+ ", assignment=" + assignment + "]";
 	}
 	

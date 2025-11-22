@@ -3,33 +3,33 @@ package com.example.progression.model;
 public class User {
 
 	private long id;
-	private boolean is_admin;
+	private boolean admin;
 	private String name;
 	
 	public User() {
 		
 	}
 	
-	public User(long id, boolean is_admin, String name) {
+	public User(long id, boolean admin, String name) {
 		super();
 		this.id = id;
-		this.is_admin = is_admin;
+		this.admin = admin;
 		this.name = name;
 	}
 
-	public User(boolean is_admin, String name) {
+	public User(boolean admin, String name) {
 		super();
-		this.is_admin = is_admin;
+		this.admin = admin;
 		this.name = name;
 	}
 
 	
 	public boolean isAdmin() {
-		return is_admin;
+		return admin;
 	}
 
-	public void setAdmin(boolean is_admin) {
-		this.is_admin = is_admin;
+	public void setAdmin(boolean admin) {
+		this.admin = admin;
 	}
 
 	public String getName() {
@@ -43,10 +43,14 @@ public class User {
 	public long getId() {
 		return id;
 	}
+	
+	public void setId(long id) {
+		this.id = id;
+	}
 
 	@Override
 	public String toString() {
-		return "User [id=" + id + ", is_admin=" + is_admin + ", name=" + name + "]";
+		return "User [id=" + id + ", admin=" + admin + ", name=" + name + "]";
 	}
 	
 	
