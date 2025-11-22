@@ -1,10 +1,33 @@
 <!DOCTYPE html>
-<html lang="ita">
-	<head>
-		<meta charset="UTF-8">
-		<title>Progression project tasks</title>
-	</head>
-	<body>
-		<h1>Tasks</h1>
-	</body>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Progression project tasks</title>
+	<script src="js/tasks.js" defer></script>
+</head>
+<body>
+
+    <h1>Task</h1>
+
+    <button id="load-tasks">Carica Task</button>
+
+    <ul id="tasks-list"></ul>
+
+    <h2>Crea / Modifica Task</h2>
+
+    <label>User ID: </label>
+    <input id="task-userId" type="number"><br>
+
+    <label>Assignment: </label>
+    <input id="task-assignment" type="text"><br>
+
+    <label>Completed: </label>
+    <input id="task-completed" type="checkbox"><br>
+
+    <label>Assigned: </label>
+    <input id="task-assigned" type="checkbox"><br><br>
+
+    <button id="add-task">Crea Task</button>
+
+</body>
 </html>
