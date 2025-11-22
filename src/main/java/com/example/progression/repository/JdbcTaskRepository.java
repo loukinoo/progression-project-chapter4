@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import com.example.progression.dto.TaskDTO;
 import com.example.progression.model.Task;
 
 @Repository
@@ -17,7 +18,7 @@ public class JdbcTaskRepository implements ITaskRepository {
 	private JdbcTemplate jdbcTemplate;
 
 	@Override
-	public int save(Task task) {
+	public int save(TaskDTO task) {
 		return jdbcTemplate.update("INSERT INTO tasks (user_id, completed, assigned, assignment)"
 				+ " VALUES (?, ?, ?, ?)", 
 				new Object[] {task.getUserId(), task.isCompleted(), task.isAssigned(), task.getAssignment()});
