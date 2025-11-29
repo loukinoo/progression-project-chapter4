@@ -3,10 +3,7 @@ package com.example.progression.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-
 import com.example.progression.dto.TaskDTO;
 import com.example.progression.model.Task;
 import com.example.progression.repository.JdbcTaskRepository;
@@ -18,75 +15,38 @@ public class TaskServices {
 	private JdbcTaskRepository repository;
 	
 	//GET methods
-	public ResponseEntity<List<Task>> getAllTasks() {
-		try {
-			List<Task> tasks = repository.findAll();
-			
-			if (tasks.isEmpty())
-				return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-			return new ResponseEntity<>(tasks, HttpStatus.OK);
-		} catch (Exception e) {
-			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-
+	public List<Task> getAllTasks() {
+		return repository.findAll();
 	}
 	
-	public ResponseEntity<Task> getTaskById(long id) {
-		Task task = repository.findById(id);
-		
-		if (task!=null)
-			return new ResponseEntity<>(task, HttpStatus.OK);
-		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+	public Task getTaskById(long id) {
+		 return repository.findById(id);
 	}
 	
-	public ResponseEntity<List<Task>> getOfUser(long id) {
-		try {
-			List<Task> tasks = repository.findOfUser(id);
-			
-			if (tasks.isEmpty())
-				return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-			return new ResponseEntity<>(tasks, HttpStatus.OK);
-		} catch (Exception e) {
-			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-		}
+	public List<Task> getOfUser(long id) {
+		return repository.findOfUser(id);
 	}
 	
-	public ResponseEntity<List<Task>> getCompleted() {
-		try {
-			List<Task> tasks = repository.findCompleted();
-			
-			if (tasks.isEmpty())
-				return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-			return new ResponseEntity<>(tasks, HttpStatus.OK);
-		} catch (Exception e) {
-			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-		}
+	public List<Task> getCompleted() {
+		return repository.findCompleted();
 	}
 	
-	public ResponseEntity<List<Task>> getAssigned() {
-		try {
-			List<Task> tasks = repository.findAssigned();
-			
-			if (tasks.isEmpty())
-				return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-			return new ResponseEntity<>(tasks, HttpStatus.OK);
-		} catch (Exception e) {
-			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-		}
+	public List<Task> getAssigned() {
+		return repository.findAssigned();
 	}
 
 	//POST methods
-	public ResponseEntity<String> createTask(TaskDTO task){
+	public int createTask(TaskDTO task){
 		try {
 			repository.save(task);
-			return new ResponseEntity<>("Task created succesfully", HttpStatus.CREATED);
+			return 0;
 		} catch (Exception e) {
-			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+			return -1;
 		}
 	}
 	
 	//PUT methods
-	public ResponseEntity<String> updateTask(long id, TaskDTO input) {
+	public int updateTask(long id, TaskDTO input) {
 		Task toUpdate = repository.findById(id);
 		
 		if (toUpdate!=null) {
@@ -95,30 +55,27 @@ public class TaskServices {
 			toUpdate.setCompleted(input.isCompleted());
 			toUpdate.setUserId(input.getUserId());
 			repository.update(toUpdate);
-			return new ResponseEntity<>("Task updated succesfully", HttpStatus.OK);
+			return 0;
 		}
-		return new ResponseEntity<>("ERROR: Cannot find task with id="+id, HttpStatus.NOT_FOUND);
+		return -1;
 	}
 	
 	//DELETE methods
-	public ResponseEntity<String>deleteAllTasks() {
+	public int deleteAllTasks() {
 		try {
 			int numRows = repository.deleteAll();
-			return new ResponseEntity<>("Succesfully deleted "+numRows+" tasks.", HttpStatus.OK);
+			return numRows;
 		} catch (Exception e) {
-			return new ResponseEntity<>("Cannot delete tasks.", HttpStatus.INTERNAL_SERVER_ERROR);
+			return -1;
 		}
 	}
 	
-	public ResponseEntity<String> deleteTask(long id) {
+	public int deleteTask(long id) {
 		try {
 			int result = repository.deleteById(id);
-			if (result == 0) {
-				return new ResponseEntity<>("Cannot find task with id="+id, HttpStatus.OK);
-			}
-			return new ResponseEntity<>("Task succesfully deleted.", HttpStatus.OK);
+			return result;			
 		} catch (Exception e) {
-			return new ResponseEntity<>("Cannot delete task.", HttpStatus.INTERNAL_SERVER_ERROR);
+			return -1;
 		}
 	}
 

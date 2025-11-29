@@ -2,6 +2,7 @@ package com.example.progression.controller;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,47 +29,98 @@ public class TaskController {
 	
 	@GetMapping
 	public ResponseEntity<List<Task>> getAllTasks() {
-		return taskServices.getAllTasks();
+		try {
+			List<Task> tasks = taskServices.getAllTasks();
+			
+			if (tasks.isEmpty())
+				return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+			return new ResponseEntity<>(tasks, HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 	
 	@GetMapping("/{id}")
 	public ResponseEntity<Task> getOneTask(@PathVariable long id) {
-		return taskServices.getTaskById(id);
+		Task task = taskServices.getTaskById(id);
+		
+
+		if (task!=null)
+			return new ResponseEntity<>(task, HttpStatus.OK);
+		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	}
 	
 	@GetMapping("/user{id}")
 	public ResponseEntity<List<Task>> getOfUser(@PathVariable long id) {
-		return taskServices.getOfUser(id);
+		try {
+			List<Task> tasks = taskServices.getOfUser(id);
+			
+			if (tasks.isEmpty())
+				return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+			return new ResponseEntity<>(tasks, HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 	
 	@GetMapping("/completed")
 	public ResponseEntity<List<Task>> getCompleted() {
-		return taskServices.getCompleted();
+		try {
+			List<Task> tasks = taskServices.getCompleted();
+			
+			if (tasks.isEmpty())
+				return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+			return new ResponseEntity<>(tasks, HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 	
 	@GetMapping("/assigned")
 	public ResponseEntity<List<Task>> getAssigned() {
-		return taskServices.getAssigned();
+		try {
+			List<Task> tasks = taskServices.getAssigned();
+			
+			if (tasks.isEmpty())
+				return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+			return new ResponseEntity<>(tasks, HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 	
 	@PostMapping
 	public ResponseEntity<String> createTask(@RequestBody TaskDTO task) {
-		return taskServices.createTask(task);
+		int res = taskServices.createTask(task);
+		if (res > -1)
+			return new ResponseEntity<>("Task created succesfully", HttpStatus.CREATED);
+		return new ResponseEntity<>("ERROR: cannot create task", HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 	
 	@PutMapping("/{id}")
 	public ResponseEntity<String> updateTask(@PathVariable Long id, @RequestBody TaskDTO task){
-		return taskServices.updateTask(id, task);
-	}
+		int res = taskServices.updateTask(id, task);
+		if (res > -1)
+			return new ResponseEntity<>("Task updated succesfully", HttpStatus.OK);
+		return new ResponseEntity<>("ERROR: Cannot find task with id="+id, HttpStatus.NOT_FOUND);
+	}	
 	
 	@DeleteMapping
 	public ResponseEntity<String> deleteAllTasks() {
-		return taskServices.deleteAllTasks();
+		int res = taskServices.deleteAllTasks();
+		if (res > -1)
+			return new ResponseEntity<>("Succesfully deleted "+res+" tasks.", HttpStatus.OK);
+		return new ResponseEntity<>("Cannot delete tasks.", HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 	
 	@DeleteMapping("/{id}")
 	public ResponseEntity<String> deleteTask(@PathVariable long id) {
-		return taskServices.deleteTask(id);
+		int res = taskServices.deleteTask(id);
+		if (res > 0)
+			return new ResponseEntity<>("Task succesfully deleted.", HttpStatus.OK);
+		if (res == 0)
+			return new ResponseEntity<>("Cannot find task with id="+id, HttpStatus.OK);
+		return new ResponseEntity<>("Cannot delete task.", HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
 }
