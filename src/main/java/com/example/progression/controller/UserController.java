@@ -2,6 +2,7 @@ package com.example.progression.controller;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,37 +29,71 @@ public class UserController {
 	
 	@GetMapping
 	public ResponseEntity<List<User>> getAllUsers() {
-		return userServices.getAllUsers();
+		try {
+			List<User> users = userServices.getAllUsers();
+			
+			if (users.isEmpty())
+				return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+			return new ResponseEntity<>(users, HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 	
 	@GetMapping("/{id}")
 	public ResponseEntity<User> getOneUser(@PathVariable long id) {
-		return userServices.getUserById(id);
+		User user = userServices.getUserById(id);
+		
+		if (user!=null)
+			return new ResponseEntity<>(user, HttpStatus.OK);
+		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	}
 	
 	@GetMapping("/admins")
 	public ResponseEntity<List<User>> getAdmins() {
-		return userServices.getAdmins();
+		try {
+			List<User> users = userServices.getAdmins();
+			
+			if (users.isEmpty())
+				return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+			return new ResponseEntity<>(users, HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
 	}
 	
 	@PostMapping
 	public ResponseEntity<String> createUser(@RequestBody UserDTO user) {
-		return userServices.createUser(user);
+		int res =  userServices.createUser(user);
+		if (res > -1) 
+			return new ResponseEntity<>("User created succesfully", HttpStatus.CREATED);
+		return new ResponseEntity<>("ERROR: Cannot create user", HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 	
 	@PutMapping("/{id}")
 	public ResponseEntity<String> updateUser(@PathVariable Long id, @RequestBody UserDTO user){
-		return userServices.updateUser(id, user);
+		int res = userServices.updateUser(id, user);
+		if (res > -1)
+			return new ResponseEntity<>("User updated succesfully", HttpStatus.OK);
+		return new ResponseEntity<>("ERROR: Cannot find user with id=\"+id", HttpStatus.NOT_FOUND);
 	}
 	
 	@DeleteMapping
 	public ResponseEntity<String> deleteAllUsers() {
-		return userServices.deleteAllUsers();
+		int res = userServices.deleteAllUsers();
+		if (res > -1)
+			return new ResponseEntity<>("Succesfully deleted "+res+" users.", HttpStatus.OK);
+		return new ResponseEntity<>("Cannot delete users.", HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 	
 	@DeleteMapping("/{id}")
 	public ResponseEntity<String> deleteUser(@PathVariable long id) {
-		return userServices.deleteUser(id);
+		int res = userServices.deleteUser(id);
+		if (res > 0)
+			return new ResponseEntity<>("User succesfully deleted.", HttpStatus.OK);
+		if (res == 0)
+			return new ResponseEntity<>("Cannot find user with id="+id, HttpStatus.OK);
+		return new ResponseEntity<>("Cannot delete user.", HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
 }
