@@ -12,25 +12,22 @@ import com.example.progression.dto.UserDTO;
 import com.example.progression.model.User;
 
 @Repository
-public class JdbcUserRepository implements IUserRepository {
+public class JdbcUserRepository {
 	
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 	
 
-	@Override
 	public int save(UserDTO user) {
 		return jdbcTemplate.update("INSERT INTO users (admin, name) VALUES (?, ?)", 
 				new Object[] {user.isAdmin(), user.getName()});
 	}
-
-	@Override
+	
 	public int update(User user) {
 		return jdbcTemplate.update("UPDATE users SET admin=?, name=? WHERE id=?", 
 				new Object[] {user.isAdmin(), user.getName(), user.getId()});
 	}
 
-	@Override
 	public User findById(long id) {
 		try {
 			User user = jdbcTemplate.queryForObject("SELECT * FROM users WHERE id=?", 
@@ -42,24 +39,20 @@ public class JdbcUserRepository implements IUserRepository {
 		}
 	}
 
-	@Override
 	public int deleteById(long id) {
 		return jdbcTemplate.update("DELETE FROM users WHERE id=?", id);
 	}
 
-	@Override
 	public List<User> findAll() {
 		return jdbcTemplate.query("SELECT * FROM users", 
 				BeanPropertyRowMapper.newInstance(User.class));
 	}
 
-	@Override
 	public List<User> findByRole(boolean isAdmin) {
 		return jdbcTemplate.query("SELECT * FROM users WHERE admin=?", 
 				BeanPropertyRowMapper.newInstance(User.class), isAdmin);
 	}
 
-	@Override
 	public int deleteAll() {
 		return jdbcTemplate.update("DELETE FROM users");
 	}
