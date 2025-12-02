@@ -1,39 +1,39 @@
 package com.example.progression.dto;
 
 public class UserDTO {
-	private boolean admin;
-	private String name;
+	private String username;
+	private String password;
 	
 	public UserDTO() {
 		
 	}
 
-	public UserDTO(boolean admin, String name) {
+	public UserDTO(String username, String password) {
 		super();
-		this.admin = admin;
-		this.name = name;
+		this.password = password;
+		this.username = username;
 	}
 
 	
-	public boolean isAdmin() {
-		return admin;
+	public String getPassword() {
+		return password;
 	}
 
-	public void setAdmin(boolean admin) {
-		this.admin = admin;
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
-	public String getName() {
-		return name;
+	public String getUsername() {
+		return username;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setUsername(String username) {
+		this.username = username;
 	}
 
 	@Override
 	public String toString() {
-		return "UserDTO [admin=" + admin + ", name=" + name + "]";
+		return "UserDTO [password=" + password + ", username=" + username + "]";
 	}
 	
 }

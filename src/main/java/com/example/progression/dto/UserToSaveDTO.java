@@ -1,19 +1,15 @@
-package com.example.progression.model;
+package com.example.progression.dto;
 
-public class User {
+public class UserToSaveDTO {
 
-	private long id;
 	private boolean admin;
 	private String username;
 	private String password;
 	
-	public User() {
-		
-	}
+	public UserToSaveDTO() {}
 	
-	public User(long id, boolean admin, String username, String password) {
+	public UserToSaveDTO(boolean admin, String username, String password) {
 		super();
-		this.id = id;
 		this.admin = admin;
 		this.username = username;
 		this.password = password;
@@ -28,17 +24,9 @@ public class User {
 		this.admin = admin;
 	}
 
-	public long getId() {
-		return id;
-	}
-	
-	public void setId(long id) {
-		this.id = id;
-	}
-
 	@Override
 	public String toString() {
-		return "User [id=" + id + ", admin=" + admin + ", username=" + username + ", password=" + password + "]";
+		return "UserToSave [admin=" + admin + ", username=" + username + ", password=" + password + "]";
 	}
 
 	public String getUsername() {

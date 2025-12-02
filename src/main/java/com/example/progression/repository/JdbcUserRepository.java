@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import com.example.progression.dto.UserDTO;
+import com.example.progression.dto.UserToSaveDTO;
 import com.example.progression.model.User;
 
 @Repository
@@ -16,16 +17,15 @@ public class JdbcUserRepository {
 	
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
-	
 
-	public int save(UserDTO user) {
-		return jdbcTemplate.update("INSERT INTO users (admin, name) VALUES (?, ?)", 
-				new Object[] {user.isAdmin(), user.getName()});
+	public int save(UserToSaveDTO user) {
+		return jdbcTemplate.update("INSERT INTO users (username, password, admin) VALUES (?, ?, ?)", 
+				new Object[] {user.getUsername(), user.getPassword(), user.isAdmin()});
 	}
 	
 	public int update(User user) {
-		return jdbcTemplate.update("UPDATE users SET admin=?, name=? WHERE id=?", 
-				new Object[] {user.isAdmin(), user.getName(), user.getId()});
+		return jdbcTemplate.update("UPDATE users SET admin=?, username=? WHERE id=?", 
+				new Object[] {user.isAdmin(), user.getUsername(), user.getId()});
 	}
 
 	public User findById(long id) {
@@ -53,6 +53,16 @@ public class JdbcUserRepository {
 				BeanPropertyRowMapper.newInstance(User.class), isAdmin);
 	}
 
+	public User findByUsername(String username) {
+		try {
+			User user = jdbcTemplate.queryForObject("SELECT * FROM users WHERE username=?", 
+					BeanPropertyRowMapper.newInstance(User.class), username);
+			return user;
+		} catch (IncorrectResultSizeDataAccessException e) {
+			return null;
+		}
+	}
+	
 	public int deleteAll() {
 		return jdbcTemplate.update("DELETE FROM users");
 	}

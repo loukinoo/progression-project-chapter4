@@ -70,9 +70,9 @@ public class UserController {
 		return new ResponseEntity<>("ERROR: Cannot create user", HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 	
-	@PutMapping("/{id}")
-	public ResponseEntity<String> updateUser(@PathVariable Long id, @RequestBody UserDTO user){
-		int res = userServices.updateUser(id, user);
+	@PutMapping
+	public ResponseEntity<String> updateUser(@RequestBody String pastUsername, @RequestBody UserDTO user){
+		int res = userServices.updateUser(pastUsername, user);
 		if (res > -1)
 			return new ResponseEntity<>("User updated succesfully", HttpStatus.OK);
 		return new ResponseEntity<>("ERROR: Cannot find user with id=\"+id", HttpStatus.NOT_FOUND);

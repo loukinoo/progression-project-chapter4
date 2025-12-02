@@ -11,9 +11,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.example.progression.model.User;
+import com.example.progression.dto.UserDTO;
 import com.example.progression.repository.JdbcUserRepository;
 import com.example.progression.security.JwtUtil;
+import com.example.progression.service.UserServices;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -22,14 +23,14 @@ public class AuthController {
 	@Autowired
 	AuthenticationManager authenticationManager;
 	@Autowired
-	JdbcUserRepository repository;
+	UserServices userServices;
 	@Autowired
 	PasswordEncoder encoder;
 	@Autowired
 	JwtUtil jwtUtils;
 	
 	@PostMapping("/signin")
-	public String authenticateUser(@RequestBody User user) {
+	public String authenticateUser(@RequestBody UserDTO user) {
 		Authentication authentication = authenticationManager.authenticate(
 				new UsernamePasswordAuthenticationToken(
 						user.getUsername(), 
@@ -38,4 +39,18 @@ public class AuthController {
 		UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 		return jwtUtils.generateToken(userDetails.getUsername());
 	}
+	
+	@PostMapping("/signup")
+    public String registerUser(@RequestBody UserDTO user) {
+        if (userServices.existsByUsername(user.getUsername())) {
+            return "Error: Username is already taken!";
+        }
+        // Create new user's account
+        UserDTO newUser = new UserDTO(
+                user.getUsername(),
+                encoder.encode(user.getPassword())
+        );
+        userServices.createUser(newUser);
+        return "User registered successfully!";
+    }
 }
