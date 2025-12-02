@@ -21,6 +21,14 @@ public class Task {
 		this.assignment = assignment;
 	}
 	
+	public Task(long userId, boolean completed, boolean assigned, String assignment) {
+		super();
+		this.userId = userId;
+		this.completed = completed;
+		this.assigned = assigned;
+		this.assignment = assignment;
+	}
+
 	public long getUserId() {
 		return userId;
 	}
