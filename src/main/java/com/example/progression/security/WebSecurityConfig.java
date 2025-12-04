@@ -53,7 +53,14 @@ public class WebSecurityConfig {
                 )
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
-                                .requestMatchers("/api/auth/**", "/api/test/all", "/login.html").permitAll() // Use 'requestMatchers' instead of 'antMatchers'
+                                .requestMatchers(
+                                		"/api/auth/**", 
+                                		"/api/test/all", 
+                                		"/static/**", 
+                                		"/**.html", 
+                                		"/css/*", 
+                                		"/js/*"
+                                	).permitAll() // Use 'requestMatchers' instead of 'antMatchers'
                                 .anyRequest().authenticated()
                 );
         // Add the JWT Token filter before the UsernamePasswordAuthenticationFilter

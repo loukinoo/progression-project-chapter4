@@ -1,6 +1,10 @@
 package com.example.progression.controller;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -12,7 +16,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.example.progression.dto.UserDTO;
-import com.example.progression.repository.JdbcUserRepository;
 import com.example.progression.security.JwtUtil;
 import com.example.progression.service.UserServices;
 
@@ -30,20 +33,25 @@ public class AuthController {
 	JwtUtil jwtUtils;
 	
 	@PostMapping("/signin")
-	public String authenticateUser(@RequestBody UserDTO user) {
-		Authentication authentication = authenticationManager.authenticate(
-				new UsernamePasswordAuthenticationToken(
-						user.getUsername(), 
-						user.getPassword())
-				);
-		UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-		return jwtUtils.generateToken(userDetails.getUsername());
+	public ResponseEntity<Map<String, String>> authenticateUser(@RequestBody UserDTO user) {
+		try {
+			Authentication authentication = authenticationManager.authenticate(
+					new UsernamePasswordAuthenticationToken(
+							user.getUsername(), 
+							user.getPassword())
+					);
+			UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+			String token = jwtUtils.generateToken(userDetails.getUsername());
+			return new ResponseEntity<>(Map.of("token", token, "message", "Logged in succesfully!"), HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<>(Map.of("error", "Invalid username or password"), HttpStatus.UNAUTHORIZED);
+		}
 	}
 	
 	@PostMapping("/signup")
-    public String registerUser(@RequestBody UserDTO user) {
+    public ResponseEntity<Map<String, String>> registerUser(@RequestBody UserDTO user) {
         if (userServices.existsByUsername(user.getUsername())) {
-            return "Error: Username is already taken!";
+            return new ResponseEntity<>(Map.of("error", "Username already in use"), HttpStatus.BAD_REQUEST);
         }
         // Create new user's account
         UserDTO newUser = new UserDTO(
@@ -51,6 +59,6 @@ public class AuthController {
                 encoder.encode(user.getPassword())
         );
         userServices.createUser(newUser);
-        return "User registered successfully!";
+        return new ResponseEntity<>(Map.of("message", "User registered successfully!"), HttpStatus.OK);
     }
 }

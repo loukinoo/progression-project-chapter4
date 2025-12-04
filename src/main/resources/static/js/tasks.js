@@ -1,8 +1,26 @@
 document.getElementById("load-tasks").addEventListener("click", loadTasks);
 document.getElementById("add-task").addEventListener("click", createTask);
+document.getElementById("logout").addEventListener("click", logout);
+const token = document.cookie
+    .split("; ")
+    .find(row => row.startsWith("jwt="))
+    ?.split("=")[1];
+
+if (!token) {
+	alert("Permission denied: you have to login first");
+	window.location.href = "/login.html"
+}
+
+function logout() {
+	document.cookie = "jwt=; Path=/;";
+	window.location.href = "/login.html"
+}
 
 function loadTasks() {
-    fetch("/tasks")
+			
+    fetch("/tasks", {
+		headers: { "Authorization": "Bearer " + token }
+	})
         .then(res => res.json())
         .then(tasks => {
             const list = document.getElementById("tasks-list");
@@ -31,7 +49,7 @@ function createTask() {
 
     fetch("/tasks", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token },
         body: JSON.stringify({ userId, assignment, completed, assigned })
     })
     .then(res => {
@@ -49,7 +67,7 @@ function updateTask(taskId) {
 
     fetch(`/tasks/${taskId}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token },
         body: JSON.stringify({ userId, assignment, completed, assigned })
     })
     .then(res => {
@@ -63,7 +81,10 @@ function updateTask(taskId) {
 }
 
 function deleteTask(taskId) {
-    fetch(`/tasks/${taskId}`, { method: "DELETE" })
+    fetch(`/tasks/${taskId}`, { 
+		method: "DELETE", 
+		headers: { "Authorization": "Bearer " + token }
+	})
         .then(res => {
             if (!res.ok) throw new Error("Errore DELETE");
         })

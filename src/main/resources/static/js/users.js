@@ -1,8 +1,25 @@
 document.getElementById("load-users").addEventListener("click", loadUsers);
 document.getElementById("add-user").addEventListener("click", createUser);
+document.getElementById("logout").addEventListener("click", logout);
+const token = document.cookie
+    .split("; ")
+    .find(row => row.startsWith("jwt="))
+    ?.split("=")[1];
+
+if (!token) {
+	alert("Permission denied: you have to login first");
+	window.location.href = "/login.html"
+}
+
+function logout() {
+	document.cookie = "jwt=; Path=/;";
+	window.location.href = "/login.html"
+}
 
 function loadUsers() {
-    fetch("/users")
+    fetch("/users", {
+		headers: { "Authorization": "Bearer " + token }
+	})
         .then(res => res.json())
         .then(users => {
             const list = document.getElementById("users-list");
@@ -26,7 +43,7 @@ function createUser() {
 
     fetch("/users", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token },
         body: JSON.stringify({ admin, name })
     })
     .then(res => {
@@ -42,7 +59,7 @@ function updateUser(id) {
     
 	fetch(`/users/${id}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token },
         body: JSON.stringify({ admin, name })
     })
     .then(res => {
@@ -54,7 +71,8 @@ function updateUser(id) {
 
 function deleteUser(id) {
     fetch(`/users/${id}`, {
-        method: "DELETE"
+        method: "DELETE",
+		headers: { "Authorization": "Bearer " + token }
     })
     .then(res => {
         if (!res.ok) throw new Error("Errore DELETE");

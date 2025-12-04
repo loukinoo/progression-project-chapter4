@@ -8,7 +8,6 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import com.example.progression.dto.UserDTO;
 import com.example.progression.dto.UserToSaveDTO;
 import com.example.progression.model.User;
 
