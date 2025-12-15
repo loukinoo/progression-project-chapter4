@@ -36,7 +36,10 @@ function signin() {
 				token = res.token;
 				console.log(token);
 				document.cookie = "jwt="+token+"; path=/";
+				localStorage.setItem("isAdmin", res.isAdmin);
+				localStorage.setItem("username", res.username);
 				console.log(document.cookie);
+				console.log(localStorage);
 				message.innerHTML = res.message;
 				window.location.href = "/tasks.html";
 				return token;

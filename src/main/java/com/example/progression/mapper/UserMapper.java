@@ -5,13 +5,9 @@ import org.springframework.stereotype.Component;
 import com.example.progression.dto.UserDTO;
 import com.example.progression.dto.UserToSaveDTO;
 import com.example.progression.model.User;
-import com.example.progression.service.UserServices;
 
 @Component
 public class UserMapper {
-	
-
-	private UserServices userServices;
 
 	public UserDTO modelToDto(User user) {
 		return new UserDTO(user.getUsername(), user.getPassword());
@@ -24,7 +20,4 @@ public class UserMapper {
 		return new UserToSaveDTO(isAdmin, user.getUsername(), user.getPassword());
 	}
 	
-	public User toModelUser(UserDTO user) {
-		return userServices.getUserByUsername(user.getUsername());
-	}
 }

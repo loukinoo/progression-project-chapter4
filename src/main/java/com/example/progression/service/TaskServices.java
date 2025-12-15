@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.example.progression.dto.TaskDTO;
 import com.example.progression.model.Task;
+import com.example.progression.model.User;
 import com.example.progression.repository.JdbcTaskRepository;
 
 @Service
@@ -13,6 +14,8 @@ public class TaskServices {
 
 	@Autowired
 	private JdbcTaskRepository repository;
+	@Autowired
+	private AuthServices authServices;
 	
 	//GET methods
 	public List<Task> getAllTasks() {
@@ -27,6 +30,11 @@ public class TaskServices {
 		return repository.findOfUser(id);
 	}
 	
+	public List<Task> getOwn() {
+		User currentUser = authServices.getLoggedInUser();
+		return repository.findOfUser(currentUser.getId());
+	}
+	
 	public List<Task> getCompleted() {
 		return repository.findCompleted();
 	}
@@ -37,6 +45,9 @@ public class TaskServices {
 
 	//POST methods
 	public int createTask(TaskDTO task){
+		User currentUser = authServices.getLoggedInUser();
+		if (!currentUser.isAdmin())
+			return 401;
 		try {
 			repository.save(task);
 			return 0;
@@ -58,6 +69,18 @@ public class TaskServices {
 			return 0;
 		}
 		return -1;
+	}
+	
+	public int changeCompletionStatus(Long id) {
+		Task toUpdate = repository.findById(id);
+		if (toUpdate == null)
+			return -1;
+		User currentUser = authServices.getLoggedInUser();
+		if (!currentUser.isAdmin() && currentUser.getId()!=toUpdate.getUserId())
+			return 401;
+		toUpdate.setCompleted(!toUpdate.isCompleted());
+		repository.update(toUpdate);
+		return 0;
 	}
 	
 	//DELETE methods

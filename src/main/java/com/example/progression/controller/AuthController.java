@@ -16,6 +16,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.example.progression.dto.UserDTO;
+import com.example.progression.model.User;
 import com.example.progression.security.JwtUtil;
 import com.example.progression.service.UserServices;
 
@@ -33,7 +34,7 @@ public class AuthController {
 	JwtUtil jwtUtils;
 	
 	@PostMapping("/signin")
-	public ResponseEntity<Map<String, String>> authenticateUser(@RequestBody UserDTO user) {
+	public ResponseEntity<Map<String, Object>> authenticateUser(@RequestBody UserDTO user) {
 		try {
 			Authentication authentication = authenticationManager.authenticate(
 					new UsernamePasswordAuthenticationToken(
@@ -42,14 +43,21 @@ public class AuthController {
 					);
 			UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 			String token = jwtUtils.generateToken(userDetails.getUsername());
-			return new ResponseEntity<>(Map.of("token", token, "message", "Logged in succesfully!"), HttpStatus.OK);
+			User currentUser = userServices.getUserByUsername(user.getUsername());
+			return new ResponseEntity<>(Map.of(
+					"token", token, 
+					"message", "Logged in succesfully!",
+					"isAdmin", currentUser.isAdmin(),
+					"username", currentUser.getUsername()
+					), HttpStatus.OK);
 		} catch (Exception e) {
+			System.out.println(e.getMessage());
 			return new ResponseEntity<>(Map.of("error", "Invalid username or password"), HttpStatus.UNAUTHORIZED);
 		}
 	}
 	
 	@PostMapping("/signup")
-    public ResponseEntity<Map<String, String>> registerUser(@RequestBody UserDTO user) {
+    public ResponseEntity<Map<String, Object>> registerUser(@RequestBody UserDTO user) {
         if (userServices.existsByUsername(user.getUsername())) {
             return new ResponseEntity<>(Map.of("error", "Username already in use"), HttpStatus.BAD_REQUEST);
         }
@@ -59,6 +67,7 @@ public class AuthController {
                 encoder.encode(user.getPassword())
         );
         userServices.createUser(newUser);
+        
         return new ResponseEntity<>(Map.of("message", "User registered successfully!"), HttpStatus.OK);
     }
 }

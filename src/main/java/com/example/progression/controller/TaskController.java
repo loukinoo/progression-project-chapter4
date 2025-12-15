@@ -1,6 +1,7 @@
 package com.example.progression.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -63,6 +64,20 @@ public class TaskController {
 		}
 	}
 	
+	@GetMapping("/own")
+	public ResponseEntity<List<Task>> getOwnTasks() {
+		try {
+			List<Task> tasks = taskServices.getOwn();
+			
+			if (tasks.isEmpty())
+				return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+			return new ResponseEntity<>(tasks, HttpStatus.OK);
+		} catch (Exception e) {
+			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+	}
+	
 	@GetMapping("/completed")
 	public ResponseEntity<List<Task>> getCompleted() {
 		try {
@@ -90,20 +105,32 @@ public class TaskController {
 	}
 	
 	@PostMapping
-	public ResponseEntity<String> createTask(@RequestBody TaskDTO task) {
+	public ResponseEntity<Map<String, Object>> createTask(@RequestBody TaskDTO task) {
 		int res = taskServices.createTask(task);
-		if (res > -1)
-			return new ResponseEntity<>("Task created succesfully", HttpStatus.CREATED);
-		return new ResponseEntity<>("ERROR: cannot create task", HttpStatus.INTERNAL_SERVER_ERROR);
+		if (res == 0)
+			return new ResponseEntity<>(Map.of("message", "Task created succesfully"), HttpStatus.CREATED);
+		if (res == 401)
+			return new ResponseEntity<>(Map.of("error", "Permission denied: not logged in as admin"), HttpStatus.UNAUTHORIZED);
+		return new ResponseEntity<>(Map.of("error", "Cannot create task"), HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 	
-	@PutMapping("/{id}")
+	@PutMapping("/update/{id}")
 	public ResponseEntity<String> updateTask(@PathVariable Long id, @RequestBody TaskDTO task){
 		int res = taskServices.updateTask(id, task);
 		if (res > -1)
 			return new ResponseEntity<>("Task updated succesfully", HttpStatus.OK);
 		return new ResponseEntity<>("ERROR: Cannot find task with id="+id, HttpStatus.NOT_FOUND);
-	}	
+	}
+	
+	@PutMapping("/complete/{id}")
+	public ResponseEntity<Map<String, Object>> changeCompletionStatus(@PathVariable Long id){
+		int res = taskServices.changeCompletionStatus(id);
+		if (res == 0)
+			return new ResponseEntity<>(Map.of("message", "Task updated succesfully"), HttpStatus.CREATED);
+		if (res == 401)
+			return new ResponseEntity<>(Map.of("error", "Permission denied: not logged in as admin or user assigned to this task"), HttpStatus.UNAUTHORIZED);
+		return new ResponseEntity<>(Map.of("error", "Cannot access task"), HttpStatus.INTERNAL_SERVER_ERROR);
+	}
 	
 	@DeleteMapping
 	public ResponseEntity<String> deleteAllTasks() {
