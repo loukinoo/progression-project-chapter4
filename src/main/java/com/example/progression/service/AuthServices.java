@@ -6,12 +6,13 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.example.progression.model.User;
+import com.example.progression.repository.JdbcUserRepository;
 
 @Service
 public class AuthServices {
 	
 	@Autowired
-	private UserServices userServices;
+	private JdbcUserRepository userRepository;
 
 	public String getLoggedInUsername() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -25,6 +26,6 @@ public class AuthServices {
 	
 	public User getLoggedInUser() {
 		String username = getLoggedInUsername();
-		return userServices.getUserByUsername(username);
+		return userRepository.findByUsername(username);
 	}
 }

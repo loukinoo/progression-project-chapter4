@@ -2,8 +2,8 @@ package com.example.progression.model;
 
 public class Task {
 	
-	private long taskId;
-	private long userId;
+	private Long taskId;
+	private Long userId;
 	private boolean completed;
 	private boolean assigned;
 	private String assignment;
@@ -12,7 +12,7 @@ public class Task {
 		
 	}
 
-	public Task(long taskId, long userId, boolean completed, boolean assigned, String assignment) {
+	public Task(Long taskId, Long userId, boolean completed, boolean assigned, String assignment) {
 		super();
 		this.taskId = taskId;
 		this.userId = userId;
@@ -21,7 +21,7 @@ public class Task {
 		this.assignment = assignment;
 	}
 	
-	public Task(long userId, boolean completed, boolean assigned, String assignment) {
+	public Task(Long userId, boolean completed, boolean assigned, String assignment) {
 		super();
 		this.userId = userId;
 		this.completed = completed;
@@ -29,11 +29,11 @@ public class Task {
 		this.assignment = assignment;
 	}
 
-	public long getUserId() {
+	public Long getUserId() {
 		return userId;
 	}
 
-	public void setUserId(long userId) {
+	public void setUserId(Long userId) {
 		this.userId = userId;
 	}
 
@@ -61,11 +61,11 @@ public class Task {
 		this.assignment = assignment;
 	}
 
-	public long getTaskId() {
+	public Long getTaskId() {
 		return taskId;
 	}
 	
-	public void setTaskId(long taskId) {
+	public void setTaskId(Long taskId) {
 		this.taskId = taskId;
 	}
 

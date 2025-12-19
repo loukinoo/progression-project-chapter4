@@ -27,7 +27,7 @@ public class JdbcUserRepository {
 				new Object[] {user.isAdmin(), user.getUsername(), user.getId()});
 	}
 
-	public User findById(long id) {
+	public User findById(Long id) {
 		try {
 			User user = jdbcTemplate.queryForObject("SELECT * FROM users WHERE id=?", 
 					BeanPropertyRowMapper.newInstance(User.class), id);
@@ -38,7 +38,7 @@ public class JdbcUserRepository {
 		}
 	}
 
-	public int deleteById(long id) {
+	public int deleteById(Long id) {
 		return jdbcTemplate.update("DELETE FROM users WHERE id=?", id);
 	}
 

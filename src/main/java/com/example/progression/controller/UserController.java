@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.progression.dto.UserDTO;
+import com.example.progression.exceptions.UnauthorizedException;
 import com.example.progression.model.User;
 import com.example.progression.service.UserServices;
 
@@ -35,13 +36,15 @@ public class UserController {
 			if (users.isEmpty())
 				return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 			return new ResponseEntity<>(users, HttpStatus.OK);
+		} catch (UnauthorizedException e) {
+			return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
 		} catch (Exception e) {
 			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 	
 	@GetMapping("/{id}")
-	public ResponseEntity<User> getOneUser(@PathVariable long id) {
+	public ResponseEntity<User> getOneUser(@PathVariable Long id) {
 		User user = userServices.getUserById(id);
 		
 		if (user!=null)
@@ -87,7 +90,7 @@ public class UserController {
 	}
 	
 	@DeleteMapping("/{id}")
-	public ResponseEntity<String> deleteUser(@PathVariable long id) {
+	public ResponseEntity<String> deleteUser(@PathVariable Long id) {
 		int res = userServices.deleteUser(id);
 		if (res > 0)
 			return new ResponseEntity<>("User succesfully deleted.", HttpStatus.OK);

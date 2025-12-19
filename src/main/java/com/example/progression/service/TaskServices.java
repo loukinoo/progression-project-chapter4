@@ -5,6 +5,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.example.progression.dto.TaskDTO;
+import com.example.progression.exceptions.UnauthorizedException;
+import com.example.progression.exceptions.UserNotFoundException;
 import com.example.progression.model.Task;
 import com.example.progression.model.User;
 import com.example.progression.repository.JdbcTaskRepository;
@@ -16,17 +18,19 @@ public class TaskServices {
 	private JdbcTaskRepository repository;
 	@Autowired
 	private AuthServices authServices;
+	@Autowired
+	private UserServices userServices;
 	
 	//GET methods
 	public List<Task> getAllTasks() {
 		return repository.findAll();
 	}
 	
-	public Task getTaskById(long id) {
+	public Task getTaskById(Long id) {
 		 return repository.findById(id);
 	}
 	
-	public List<Task> getOfUser(long id) {
+	public List<Task> getOfUser(Long id) {
 		return repository.findOfUser(id);
 	}
 	
@@ -39,10 +43,58 @@ public class TaskServices {
 		return repository.findCompleted();
 	}
 	
-	public List<Task> getAssigned() {
-		return repository.findAssigned();
+	public List<Task> getAssigned() throws UnauthorizedException {
+		User currentUser = authServices.getLoggedInUser();
+		if (currentUser.isAdmin())
+			return repository.findAssigned(true);
+		throw new UnauthorizedException("Cannot access other users' data without being logged as admin");
+	}
+	
+	public List<Task> getNotAssigned() throws UnauthorizedException {
+		User currentUser = authServices.getLoggedInUser();
+		try { 
+			if (currentUser.isAdmin())
+				return repository.findAssigned(false);
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+		throw new UnauthorizedException("Cannot access other users' data without being logged as admin");
+	}
+	
+	public int getCompletionRateOf(Long id, User currentUser) throws UnauthorizedException {
+		if (!currentUser.isAdmin() && currentUser.getId() != id)
+			throw new UnauthorizedException("Cannot access other users' data without being logged as admin");
+		List<Task> assigned = getOfUser(id);
+		if (assigned.isEmpty())
+			return -1;
+		int completed = 0;
+		for (Task task : assigned) {
+			if (task.isCompleted())
+				completed++;
+		}
+		return 100*completed/assigned.size();
+	}
+	
+	public int getCompletionRateOf(Long id) throws UnauthorizedException {
+		User currentUser = authServices.getLoggedInUser();
+		return getCompletionRateOf(id, currentUser);
+	}
+	
+	public int getOwnCompletionRate() throws UnauthorizedException {
+		User currentUser = authServices.getLoggedInUser();
+		return getCompletionRateOf(currentUser.getId(), currentUser);
 	}
 
+	public int getGlobalCompletionRate() throws UnauthorizedException {
+		User currentUser = authServices.getLoggedInUser();
+		if (!currentUser.isAdmin())
+			throw new UnauthorizedException("Cannot access global users' data without being logged as admin");
+		List<Task> assigned = getAssigned();
+		if (assigned.isEmpty())
+			return -1;
+		return 100*getCompleted().size()/assigned.size();
+	}
+	
 	//POST methods
 	public int createTask(TaskDTO task){
 		User currentUser = authServices.getLoggedInUser();
@@ -52,12 +104,18 @@ public class TaskServices {
 			repository.save(task);
 			return 0;
 		} catch (Exception e) {
+			System.out.println(e.getMessage());
 			return -1;
 		}
 	}
 	
+	public int createTask(String assignment) {
+		TaskDTO toCreate = new TaskDTO(null, false, false, assignment);
+		return createTask(toCreate);
+	}
+	
 	//PUT methods
-	public int updateTask(long id, TaskDTO input) {
+	public int updateTask(Long id, TaskDTO input) {
 		Task toUpdate = repository.findById(id);
 		
 		if (toUpdate!=null) {
@@ -83,6 +141,22 @@ public class TaskServices {
 		return 0;
 	}
 	
+	public int assignTaskTo(Long id, String username) throws UnauthorizedException, UserNotFoundException {
+		User currentUser = authServices.getLoggedInUser();
+		if (!currentUser.isAdmin())
+			throw new UnauthorizedException("Cannot access global users' data without being logged as admin");
+		Task toAssign = repository.findById(id);
+		User assignee = userServices.getUserByUsername(username);
+		if (assignee == null)
+			throw new UserNotFoundException("Cannot find user with username: " + username);
+		if (toAssign == null)
+			return -1;
+		toAssign.setAssigned(true);
+		toAssign.setUserId(assignee.getId());
+		repository.update(toAssign);
+		return 0;
+	}
+	
 	//DELETE methods
 	public int deleteAllTasks() {
 		try {
@@ -93,7 +167,7 @@ public class TaskServices {
 		}
 	}
 	
-	public int deleteTask(long id) {
+	public int deleteTask(Long id) {
 		try {
 			int result = repository.deleteById(id);
 			return result;			
@@ -101,5 +175,6 @@ public class TaskServices {
 			return -1;
 		}
 	}
+
 
 }

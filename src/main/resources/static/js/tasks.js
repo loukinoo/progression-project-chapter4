@@ -1,5 +1,5 @@
-document.getElementById("load-own-tasks").addEventListener("click", loadOwnTasks);
-document.getElementById("load-tasks").addEventListener("click", loadTasks);
+document.getElementById("load-own-tasks").addEventListener("click", showOwnTasks);
+document.getElementById("load-users").addEventListener("click", loadUsers);
 document.getElementById("add-task").addEventListener("click", createTask);
 document.getElementById("logout").addEventListener("click", logout);
 const token = document.cookie
@@ -9,7 +9,7 @@ const token = document.cookie
 
 if (!token) {
 	alert("Permission denied: you have to login first");
-	window.location.href = "/login.html"
+	logout();
 }
 
 const loggedAsAdmin = localStorage.getItem("isAdmin") === "true";
@@ -22,6 +22,8 @@ if (!loggedAsAdmin) {
 } else {
 	const title = document.getElementById("title");
 	title.innerHTML += " (Logged in as admin)";
+	loadNotAssigned();
+	loadStatistics();
 }
 
 function logout() {
@@ -31,12 +33,30 @@ function logout() {
 	window.location.href = "/login.html"
 }
 
+function showOwnTasks() {
+	const button = document.getElementById("load-own-tasks");
+	const list = document.getElementById("own-tasks-list");
+	if (list.innerHTML) {
+		list.innerHTML="";
+		button.innerHTML="Check Your Tasks";
+	} else {
+		loadOwnTasks();
+	}
+}
+
 function loadOwnTasks() {
 	fetch("/tasks/own", {
 		headers: { "Authorization": "Bearer " + token }
 	})
-		.then(res => res.json())
-		.then(tasks => {
+		.then(res => {
+			if (res.status === 401) {
+	            alert("Token expired: login again.");
+	            logout(); 
+	            throw new Error("Expired Token");
+			}
+			return res.json()
+		})
+		.then(async tasks => {
 			const list = document.getElementById("own-tasks-list");
             list.innerHTML = "";
 
@@ -61,7 +81,47 @@ function loadOwnTasks() {
                 `;
                 list.appendChild(li);
             });
+			const rate = await getOwnRate();
+			const p = document.createElement("p");
+			if (rate < 0) {
+				p.innerHTML = `
+					No task has been assigned yet!
+				`
+			} else {
+				p.innerHTML = `
+					Percentage of tasks completed: ${rate}%
+				`
+			}
+			list.appendChild(p);
+			
+			const button = document.getElementById("load-own-tasks");
+			button.innerHTML="Hide Tasks";
 		});
+}
+
+async function getOwnRate() {
+    try {
+        const response = await fetch("/tasks/rate/own", {
+            headers: { "Authorization": "Bearer " + token }
+        });
+
+		
+		if (response.status === 401) {
+            alert("Token expired: login again.");
+            logout(); 
+            throw new Error("Expired Token");
+		}
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+		
+        const res = await response.json();
+        return res.rate;
+        
+    } catch (error) {
+        console.error("Error in loading completion rate:", error);
+        return -1;
+    }
 }
 
 function changeCompletionTask(taskId) {
@@ -72,74 +132,152 @@ function changeCompletionTask(taskId) {
 		.then(() => loadOwnTasks());
 }
 
-function loadTasks() {
-			
-    fetch("/tasks", {
+function loadUsers() {
+	const button = document.getElementById("load-users");
+	const list = document.getElementById("users-list");
+	if (list.innerHTML) {
+		list.innerHTML="";
+		button.innerHTML="Show All Users";
+		return;
+	}
+	
+    fetch("/users", {
 		headers: { "Authorization": "Bearer " + token }
 	})
-        .then(res => res.json())
-        .then(tasks => {
-            const list = document.getElementById("tasks-list");
+		.then(res => {
+			if (res.status === 401) {
+	            alert("Token expired: login again.");
+	            logout(); 
+	            throw new Error("Expired Token");
+			}
+			return res.json()
+		})
+        .then(users => {
+            const list = document.getElementById("users-list");
+            list.innerHTML = "";
+
+            users.forEach(async u => {
+                const li = document.createElement("li");
+				let rate = await getRateOf(u.id);
+				if (rate < 0) {
+					rate = "No tasks assigned yet";
+				} else {
+					rate = rate+"%";
+				}
+				li.innerHTML = `
+				        ${u.id} - ${u.username} (admin: ${u.admin}) - Completion rate: ${rate}
+				    `;
+                list.appendChild(li);
+            });
+			const button = document.getElementById("load-users");
+			button.innerHTML = "Hide Users";
+        });
+}
+
+async function getRateOf(userId) {
+    try {
+        const response = await fetch(`/tasks/rate/${userId}`, {
+            headers: { "Authorization": "Bearer " + token }
+        });
+
+		
+		if (response.status === 401) {
+            alert("Token expired: login again.");
+            logout(); 
+            throw new Error("Expired Token");
+		}
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+		
+        const res = await response.json();
+        return res.rate;
+        
+    } catch (error) {
+        console.error("Error in loading completion rate:", error);
+        return -1;
+    }
+}
+
+function createTask() {
+    const assignment = document.getElementById("new-task-assignment").value;
+	
+    fetch("/tasks", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token },
+        body: assignment
+    })
+    .then(res => {
+		if (res.status === 401) {
+            alert("Token expired: login again.");
+            logout(); 
+            throw new Error("Expired Token");
+		}
+        if (!res.ok) throw new Error("POST Error");
+        return res.text();
+    })
+    .then(() => loadNotAssigned());
+}
+
+function loadNotAssigned() {
+	fetch("/tasks/not_assigned", {
+		headers: { "Authorization": "Bearer " + token }
+	})
+		.then(res => {
+			if (res.status === 401) {
+	            alert("Token expired: login again.");
+	            logout(); 
+	            throw new Error("Expired Token");
+			}
+			return res.json()
+		})
+		.then(async tasks => {
+			const list = document.getElementById("not-yet-assigned");
             list.innerHTML = "";
 
             tasks.forEach(t => {
-				let adminButtons = "";
-				if (loggedAsAdmin) {
-					adminButtons = `
-						<button onclick="deleteTask(${t.taskId})">❌</button>
-						<button onclick="updateTask(${t.taskId})">✏️</button>
-					`;
-				}
-				
                 const li = document.createElement("li");
                 li.innerHTML = `
-                    ID: ${t.taskId} — User: ${t.userId}<br>
-                    Assigned: ${t.assigned} | Completed: ${t.completed}<br>
                     Assignment: ${t.assignment}<br>
-                    ${adminButtons}
+					<label>Assign to (username): </label>
+					<input id="task-${t.taskId}-assignee" type="text">
+					<button onclick="assignTask(${t.taskId})">️Assign</button><br>
+					<label>Delete</label>
+					<button onclick="deleteTask(${t.taskId})">❌</button><br>
+					<p id="message-task-${t.taskId}"></p>
                     <hr>
                 `;
                 list.appendChild(li);
             });
-        });
+			
+		});
 }
 
-function createTask() {
-    const userId = Number(document.getElementById("task-userId").value);
-    const assignment = document.getElementById("task-assignment").value;
-    const completed = document.getElementById("task-completed").checked;
-    const assigned = document.getElementById("task-assigned").checked;
-
-    fetch("/tasks", {
+function assignTask(taskId) {
+    const username = document.getElementById(`task-${taskId}-assignee`).value;
+	
+    fetch(`/tasks/assign/${taskId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token },
-        body: JSON.stringify({ userId, assignment, completed, assigned })
+        body: username
     })
     .then(res => {
-        if (!res.ok) throw new Error("Errore POST");
-        return res.text();
-    })
-    .then(() => loadTasks());
-}
-
-function updateTask(taskId) {
-    const userId = Number(document.getElementById("task-userId").value);
-    const assignment = document.getElementById("task-assignment").value;
-    const completed = document.getElementById("task-completed").checked;
-    const assigned = document.getElementById("task-assigned").checked;
-
-    fetch(`/tasks/update/${taskId}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token },
-        body: JSON.stringify({ userId, assignment, completed, assigned })
+		if (res.status === 401) {
+            alert("Token expired: login again.");
+            logout(); 
+            throw new Error("Expired Token");
+		}
+        return res.json();
     })
     .then(res => {
-        if (!res.ok) throw new Error("Errore PUT");
-        return res.text();
-    })
-    .then(() => {
-        document.getElementById("add-task").onclick = createTask;
-        loadTasks();
+		if (res.error) {
+			const message = document.getElementById(`message-task-${taskId}`);
+			message.innerHTML = res.error;
+		} else {
+	        document.getElementById("add-task").onclick = createTask;
+	        loadNotAssigned();
+			loadStatistics();
+		}
     });
 }
 
@@ -149,7 +287,36 @@ function deleteTask(taskId) {
 		headers: { "Authorization": "Bearer " + token }
 	})
         .then(res => {
-            if (!res.ok) throw new Error("Errore DELETE");
-        })
-        .then(() => loadTasks());
+			if (res.status === 401) {
+	            alert("Token expired: login again.");
+	            logout(); 
+	            throw new Error("Expired Token");
+			}
+			if (!res.ok) throw new Error("DELETE Error");
+		})
+        .then(() => {
+			loadNotAssigned();
+			loadStatistics();
+		});
+}
+
+function loadStatistics() {
+	fetch(`/tasks/rate/global`, {
+		headers: { "Authorization": "Bearer " + token }
+	})
+		.then(res => {
+			if (res.status === 401) {
+	            alert("Token expired: login again.");
+	            logout(); 
+	            throw new Error("Expired Token");
+			}
+			return res.json();
+		})
+		.then(res => {
+			if (res.error) {
+				throw new Error(res.error);
+			}
+			const message = document.getElementById("global-rate");
+			message.innerHTML = "Global completion rate against assigned: " + res.rate + "%";
+		})
 }

@@ -2,7 +2,7 @@ package com.example.progression.dto;
 
 public class TaskDTO {
 
-	private long userId;
+	private Long userId;
 	private boolean completed;
 	private boolean assigned;
 	private String assignment;
@@ -11,7 +11,7 @@ public class TaskDTO {
 		
 	}
 
-	public TaskDTO(long userId, boolean completed, boolean assigned, String assignment) {
+	public TaskDTO(Long userId, boolean completed, boolean assigned, String assignment) {
 		super();
 		this.userId = userId;
 		this.completed = completed;
@@ -19,11 +19,11 @@ public class TaskDTO {
 		this.assignment = assignment;
 	}
 	
-	public long getUserId() {
+	public Long getUserId() {
 		return userId;
 	}
 
-	public void setUserId(long userId) {
+	public void setUserId(Long userId) {
 		this.userId = userId;
 	}
 

@@ -12,27 +12,24 @@
     <button id="load-own-tasks">Check Your Tasks</button>
 	
 	<ul id="own-tasks-list"></ul>
-	
-	<button id="load-tasks">Check All Tasks</button>
-
-    <ul id="tasks-list"></ul>
 		
 	<div id="adminActions">
-	    <h2>Crea / Modifica Task</h2>
+	    <h2>Admin space</h2>
+		
+		<button id="load-users">Show All Users</button>
+	    <ul id="users-list"></ul>
+		
+		<h3>Add a new task</h3>
+		
+		<label>Assignment: </label>
+		<input id="new-task-assignment" type="text">
+		<button id="add-task">Add</button>
+		
+		<h3>Tasks not yet assigned</h3>
+		<ul id="not-yet-assigned"></ul>
+		
+		<h4 id="global-rate"></h4>
 	
-	    <label>User ID: </label>
-	    <input id="task-userId" type="number"><br>
-	
-	    <label>Assignment: </label>
-	    <input id="task-assignment" type="text"><br>
-	
-	    <label>Completed: </label>
-	    <input id="task-completed" type="checkbox"><br>
-	
-	    <label>Assigned: </label>
-	    <input id="task-assigned" type="checkbox"><br><br>
-	
-	    <button id="add-task">Crea Task</button>
 	</div>
 	<p></p>
 	<button id="logout">Logout</button>

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.progression.dto.UserDTO;
 import com.example.progression.dto.UserToSaveDTO;
+import com.example.progression.exceptions.UnauthorizedException;
 import com.example.progression.mapper.UserMapper;
 import com.example.progression.model.User;
 import com.example.progression.repository.JdbcUserRepository;
@@ -18,13 +19,18 @@ public class UserServices {
 	private JdbcUserRepository repository;
 	@Autowired
 	private UserMapper mapper;
+	@Autowired
+	private AuthServices authServices;
 
 	//GET methods
-	public List<User> getAllUsers() {
-		return repository.findAll();
+	public List<User> getAllUsers() throws UnauthorizedException {
+		User currentUser = authServices.getLoggedInUser();
+		if (currentUser.isAdmin())
+			return repository.findAll();
+		throw new UnauthorizedException("Cannot access users' data without being logged as admin");
 	}
 	
-	public User getUserById(long id) {
+	public User getUserById(Long id) {
 		return repository.findById(id);
 	}
 	
@@ -85,7 +91,7 @@ public class UserServices {
 		}
 	}
 	
-	public int deleteUser(long id) {
+	public int deleteUser(Long id) {
 		try {
 			int result = repository.deleteById(id);
 			return result;

@@ -2,7 +2,7 @@ package com.example.progression.model;
 
 public class User {
 
-	private long id;
+	private Long id;
 	private boolean admin;
 	private String username;
 	private String password;
@@ -11,7 +11,7 @@ public class User {
 		
 	}
 	
-	public User(long id, boolean admin, String username, String password) {
+	public User(Long id, boolean admin, String username, String password) {
 		super();
 		this.id = id;
 		this.admin = admin;
@@ -28,11 +28,11 @@ public class User {
 		this.admin = admin;
 	}
 
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
 	
-	public void setId(long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 

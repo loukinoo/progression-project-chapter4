@@ -1,6 +1,5 @@
 document.getElementById("signin").addEventListener("click", signin);
 document.getElementById("signup").addEventListener("click", signup);
-document.getElementById("cookies-button").addEventListener("click", showCookies);
 
 const docToken = document.cookie
     .split("; ")
@@ -78,18 +77,5 @@ function signup() {
 	} catch (err) {
 		message.innerHTML = "Error: cannot connect to server";
 		console.error(err);
-	}
-}
-
-function showCookies() {
-	const message = document.getElementById("cookies-p");
-	const button = document.getElementById("cookies-button");
-	
-	if (message.innerHTML) {
-		message.innerHTML = "";
-		button.innerHTML = "Show cookies";
-	} else {
-		message.innerHTML = document.cookie;
-		button.innerHTML = "Unshow cookies";
 	}
 }
