@@ -54,8 +54,8 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(authorizeRequests ->
                         authorizeRequests
                                 .requestMatchers(
+                                		"/", 
                                 		"/api/auth/**", 
-                                		"/api/test/all", 
                                 		"/static/**", 
                                 		"/**.html", 
                                 		"/css/*", 

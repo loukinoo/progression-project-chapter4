@@ -52,9 +52,7 @@ public class JdbcTaskRepository {
 	}
 
 	public List<Task> findCompleted() {
-		List<Task> ouTasks = jdbcTemplate.query("SELECT * FROM tasks WHERE completed=true", BeanPropertyRowMapper.newInstance(Task.class));
-		System.out.println(ouTasks);
-		return ouTasks;
+		return jdbcTemplate.query("SELECT * FROM tasks WHERE completed=true", BeanPropertyRowMapper.newInstance(Task.class));
 	}
 
 	public List<Task> findAssigned(boolean assigned) {

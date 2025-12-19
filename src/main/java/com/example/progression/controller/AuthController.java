@@ -51,7 +51,6 @@ public class AuthController {
 					"username", currentUser.getUsername()
 					), HttpStatus.OK);
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
 			return new ResponseEntity<>(Map.of("error", "Invalid username or password"), HttpStatus.UNAUTHORIZED);
 		}
 	}

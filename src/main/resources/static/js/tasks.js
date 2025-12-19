@@ -1,6 +1,4 @@
 document.getElementById("load-own-tasks").addEventListener("click", showOwnTasks);
-document.getElementById("load-users").addEventListener("click", loadUsers);
-document.getElementById("add-task").addEventListener("click", createTask);
 document.getElementById("logout").addEventListener("click", logout);
 const token = document.cookie
     .split("; ")
@@ -13,15 +11,31 @@ if (!token) {
 }
 
 const loggedAsAdmin = localStorage.getItem("isAdmin") === "true";
+const adminActionsInnerHTML = `
+<h2>Admin space</h2>
+		
+		<button id="load-users">Show All Users</button>
+	    <ul id="users-list"></ul>
+		
+		<h3>Add a new task</h3>
+		
+		<label>Assignment: </label>
+		<input id="new-task-assignment" type="text">
+		<button id="add-task">Add</button>
+		
+		<h3>Tasks not yet assigned</h3>
+		<ul id="not-yet-assigned"></ul>
+		
+		<h4 id="global-rate"></h4>
+`
 
-if (!loggedAsAdmin) {
-	const adminActions = document.getElementById("adminActions");
-	if (adminActions) {
-		adminActions.style.display = "none";
-	}
-} else {
+if (loggedAsAdmin) {
 	const title = document.getElementById("title");
 	title.innerHTML += " (Logged in as admin)";
+	const adminSection = document.getElementById("adminActions");
+	adminSection.innerHTML =adminActionsInnerHTML;
+	document.getElementById("load-users").addEventListener("click", loadUsers);
+	document.getElementById("add-task").addEventListener("click", createTask);
 	loadNotAssigned();
 	loadStatistics();
 }
@@ -129,7 +143,12 @@ function changeCompletionTask(taskId) {
 		method: "PUT",
 		headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token },
 	})
-		.then(() => loadOwnTasks());
+		.then(() => {
+			loadOwnTasks();
+			if (loggedAsAdmin) {
+				loadStatistics();
+			}
+		});
 }
 
 function loadUsers() {
@@ -277,6 +296,10 @@ function assignTask(taskId) {
 	        document.getElementById("add-task").onclick = createTask;
 	        loadNotAssigned();
 			loadStatistics();
+			const list = document.getElementById("own-tasks-list");
+			if (list.innerHTML) {
+				loadOwnTasks();
+			}
 		}
     });
 }

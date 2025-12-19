@@ -14,6 +14,7 @@ import com.example.progression.service.CustomUserDetailsService;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -52,6 +53,13 @@ public class AuthTokenFilter extends OncePerRequestFilter {
         String headerAuth = request.getHeader("Authorization");
         if (headerAuth != null && headerAuth.startsWith("Bearer ")) {
             return headerAuth.substring(7);
+        }
+        if (request.getCookies() != null) {
+        	Cookie[] cookies = request.getCookies();
+        	for (Cookie cookie: cookies) {
+        		if (cookie.getName().equals("jwt"))
+        			return cookie.getValue().isBlank() ? null : cookie.getValue();
+        	}
         }
         return null;
     }
