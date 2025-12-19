@@ -34,7 +34,7 @@ if (loggedAsAdmin) {
 	title.innerHTML += " (Logged in as admin)";
 	const adminSection = document.getElementById("adminActions");
 	adminSection.innerHTML =adminActionsInnerHTML;
-	document.getElementById("load-users").addEventListener("click", loadUsers);
+	document.getElementById("load-users").addEventListener("click", showUsers);
 	document.getElementById("add-task").addEventListener("click", createTask);
 	loadNotAssigned();
 	loadStatistics();
@@ -151,14 +151,18 @@ function changeCompletionTask(taskId) {
 		});
 }
 
-function loadUsers() {
+function showUsers() {
 	const button = document.getElementById("load-users");
 	const list = document.getElementById("users-list");
 	if (list.innerHTML) {
 		list.innerHTML="";
 		button.innerHTML="Show All Users";
-		return;
+	} else {
+		loadUsers();
 	}
+}
+
+function loadUsers() {
 	
     fetch("/users", {
 		headers: { "Authorization": "Bearer " + token }
@@ -296,9 +300,13 @@ function assignTask(taskId) {
 	        document.getElementById("add-task").onclick = createTask;
 	        loadNotAssigned();
 			loadStatistics();
-			const list = document.getElementById("own-tasks-list");
-			if (list.innerHTML) {
+			const tasksList = document.getElementById("own-tasks-list");
+			if (tasksList.innerHTML) {
 				loadOwnTasks();
+			}
+			const usersList = document.getElementById("users-list");
+			if (usersList.innerHTML) {
+				loadUsers();
 			}
 		}
     });
