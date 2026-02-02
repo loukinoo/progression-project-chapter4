@@ -6,15 +6,12 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.example.progression.dto.TaskDTO;
 import com.example.progression.model.Task;
 
 @Repository
 public interface TaskRepository extends JpaRepository<Task, Long> {
 
-	int save(TaskDTO task);
-
-	int update(Task task);
+	<S extends Task> S save(S task);
 
 	Optional<Task> findById(Long id);
 
@@ -22,11 +19,11 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 	
 	List<Task> findAll();
 
-	List<Task> findOfUser(Long userId);
+	List<Task> findByUserId(Long userId);
 
-	List<Task> findCompleted(boolean completed);
+	List<Task> findByCompleted(boolean completed);
 	
-	List<Task> findAssigned(boolean assigned);
+	List<Task> findByAssigned(boolean assigned);
 
 	void deleteAll();
 
