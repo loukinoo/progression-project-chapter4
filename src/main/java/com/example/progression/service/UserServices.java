@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.progression.dto.UserDTO;
-import com.example.progression.dto.UserToSaveDTO;
 import com.example.progression.exceptions.UnauthorizedException;
 import com.example.progression.mapper.UserMapper;
 import com.example.progression.model.User;
@@ -43,7 +42,7 @@ public class UserServices {
 	}
 	
 	public List<User> getAdmins() {	
-		return repository.findByRole(true);
+		return repository.findByAdmin(true);
 	}
 	
 	public boolean existsByUsername(String username) {
@@ -53,7 +52,7 @@ public class UserServices {
 	//POST methods
 	public int createUser(UserDTO user){
 		try {
-			UserToSaveDTO toSave = mapper.dtoToToSaveDTO(user);
+			User toSave = mapper.dtoToModel(user);
 			repository.save(toSave);
 			return 0;
 		} catch (Exception e) {
@@ -68,7 +67,7 @@ public class UserServices {
 		if (toUpdate!=null) {
 			toUpdate.setUsername(input.getUsername());
 			toUpdate.setPassword(input.getPassword());
-			repository.update(toUpdate);
+			repository.save(toUpdate);
 			return 0;
 		}
 		return -1;
@@ -79,7 +78,7 @@ public class UserServices {
 		
 		if (toUpdate!=null) {
 			toUpdate.setAdmin(!toUpdate.isAdmin());
-			repository.update(toUpdate);
+			repository.save(toUpdate);
 			return 0;
 		}
 		return -1;

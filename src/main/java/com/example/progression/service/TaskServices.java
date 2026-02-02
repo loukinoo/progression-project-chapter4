@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.example.progression.dto.TaskDTO;
 import com.example.progression.exceptions.UnauthorizedException;
 import com.example.progression.exceptions.UserNotFoundException;
+import com.example.progression.mapper.TaskMapper;
 import com.example.progression.model.Task;
 import com.example.progression.model.User;
 import com.example.progression.repository.TaskRepository;
@@ -17,6 +18,8 @@ public class TaskServices {
 
 	@Autowired
 	private TaskRepository repository;
+	@Autowired
+	private TaskMapper mapper;
 	@Autowired
 	private AuthServices authServices;
 	@Autowired
@@ -35,22 +38,22 @@ public class TaskServices {
 	}
 	
 	public List<Task> getOfUser(Long id) {
-		return repository.findOfUser(id);
+		return repository.findByUserId(id);
 	}
 	
 	public List<Task> getOwn() {
 		User currentUser = authServices.getLoggedInUser();
-		return repository.findOfUser(currentUser.getId());
+		return repository.findByUserId(currentUser.getId());
 	}
 	
 	public List<Task> getCompleted() {
-		return repository.findCompleted(true);
+		return repository.findByCompleted(true);
 	}
 	
 	public List<Task> getAssigned() throws UnauthorizedException {
 		User currentUser = authServices.getLoggedInUser();
 		if (currentUser.isAdmin())
-			return repository.findAssigned(true);
+			return repository.findByAssigned(true);
 		throw new UnauthorizedException("Cannot access other users' data without being logged as admin");
 	}
 	
@@ -58,7 +61,7 @@ public class TaskServices {
 		User currentUser = authServices.getLoggedInUser();
 		try { 
 			if (currentUser.isAdmin())
-				return repository.findAssigned(false);
+				return repository.findByAssigned(false);
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		}
@@ -105,7 +108,8 @@ public class TaskServices {
 		if (!currentUser.isAdmin())
 			return 401;
 		try {
-			repository.save(task);
+			Task toSave = mapper.dtoToModel(task);
+			repository.save(toSave);
 			return 0;
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
@@ -128,7 +132,7 @@ public class TaskServices {
 			toUpdate.setAssignment(input.getAssignment());
 			toUpdate.setCompleted(input.isCompleted());
 			toUpdate.setUserId(input.getUserId());
-			repository.update(toUpdate);
+			repository.save(toUpdate);
 			return 0;
 		}
 		return -1;
@@ -143,7 +147,7 @@ public class TaskServices {
 		if (!currentUser.isAdmin() && currentUser.getId()!=toUpdate.getUserId())
 			return 401;
 		toUpdate.setCompleted(!toUpdate.isCompleted());
-		repository.update(toUpdate);
+		repository.save(toUpdate);
 		return 0;
 	}
 	
@@ -160,7 +164,7 @@ public class TaskServices {
 		Task toAssign = task.get();
 		toAssign.setAssigned(true);
 		toAssign.setUserId(assignee.getId());
-		repository.update(toAssign);
+		repository.save(toAssign);
 		return 0;
 	}
 	
