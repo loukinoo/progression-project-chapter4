@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 public class User {
 
 	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 	private boolean admin;
 	private String username;
@@ -25,6 +26,12 @@ public class User {
 	}
 
 	
+	public User(boolean isAdmin, String username, String password) {
+		this.admin = isAdmin;
+		this.username = username;
+		this.password = password;
+	}
+
 	public boolean isAdmin() {
 		return admin;
 	}

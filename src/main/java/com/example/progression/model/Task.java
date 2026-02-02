@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 public class Task {
 	
 	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long taskId;
 	private Long userId;
 	private boolean completed;
