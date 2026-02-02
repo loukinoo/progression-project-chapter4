@@ -12,7 +12,7 @@ public class TaskMapper {
 		return new TaskDTO(task.getUserId(), task.isCompleted(), task.isAssigned(), task.getAssignment());
 	}
 	
-	public Task toModelTask(TaskDTO task) {
+	public Task dtoToModel(TaskDTO task) {
 		return new Task(task.getUserId(), task.isCompleted(), task.isAssigned(), task.getAssignment());
 	}
 }
