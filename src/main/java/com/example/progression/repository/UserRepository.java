@@ -1,6 +1,7 @@
 package com.example.progression.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -16,9 +17,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
 	
 	int update(User user);
 
-	User findById();
+	Optional<User> findById(Long Id);
 
-	int deleteById();
+	void deleteById(Long id);
 
 	List<User> findAll();
 

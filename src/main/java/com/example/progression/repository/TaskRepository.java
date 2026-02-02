@@ -1,6 +1,7 @@
 package com.example.progression.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -15,9 +16,9 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 
 	int update(Task task);
 
-	Task findById();
+	Optional<Task> findById(Long id);
 
-	int deleteById();
+	void deleteById(Long id);
 	
 	List<Task> findAll();
 
