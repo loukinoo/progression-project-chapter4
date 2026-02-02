@@ -1,6 +1,7 @@
 package com.example.progression.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -9,13 +10,13 @@ import com.example.progression.exceptions.UnauthorizedException;
 import com.example.progression.exceptions.UserNotFoundException;
 import com.example.progression.model.Task;
 import com.example.progression.model.User;
-import com.example.progression.repository.JdbcTaskRepository;
+import com.example.progression.repository.TaskRepository;
 
 @Service
 public class TaskServices {
 
 	@Autowired
-	private JdbcTaskRepository repository;
+	private TaskRepository repository;
 	@Autowired
 	private AuthServices authServices;
 	@Autowired
@@ -27,7 +28,10 @@ public class TaskServices {
 	}
 	
 	public Task getTaskById(Long id) {
-		 return repository.findById(id);
+		 Optional<Task> out = repository.findById(id);
+		 if (out.isEmpty())
+			 return null;
+		 return out.get();
 	}
 	
 	public List<Task> getOfUser(Long id) {
@@ -40,7 +44,7 @@ public class TaskServices {
 	}
 	
 	public List<Task> getCompleted() {
-		return repository.findCompleted();
+		return repository.findCompleted(true);
 	}
 	
 	public List<Task> getAssigned() throws UnauthorizedException {
@@ -116,9 +120,10 @@ public class TaskServices {
 	
 	//PUT methods
 	public int updateTask(Long id, TaskDTO input) {
-		Task toUpdate = repository.findById(id);
+		Optional<Task> task = repository.findById(id); 
 		
-		if (toUpdate!=null) {
+		if (task.isEmpty()) {
+			Task toUpdate = task.get();
 			toUpdate.setAssigned(input.isAssigned());
 			toUpdate.setAssignment(input.getAssignment());
 			toUpdate.setCompleted(input.isCompleted());
@@ -130,9 +135,10 @@ public class TaskServices {
 	}
 	
 	public int changeCompletionStatus(Long id) {
-		Task toUpdate = repository.findById(id);
-		if (toUpdate == null)
+		Optional<Task> task = repository.findById(id);
+		if (!task.isPresent())
 			return -1;
+		Task toUpdate = task.get();
 		User currentUser = authServices.getLoggedInUser();
 		if (!currentUser.isAdmin() && currentUser.getId()!=toUpdate.getUserId())
 			return 401;
@@ -145,12 +151,13 @@ public class TaskServices {
 		User currentUser = authServices.getLoggedInUser();
 		if (!currentUser.isAdmin())
 			throw new UnauthorizedException("Cannot access global users' data without being logged as admin");
-		Task toAssign = repository.findById(id);
+		Optional<Task> task = repository.findById(id);
 		User assignee = userServices.getUserByUsername(username);
 		if (assignee == null)
 			throw new UserNotFoundException("Cannot find user with username: " + username);
-		if (toAssign == null)
+		if (task.isEmpty())
 			return -1;
+		Task toAssign = task.get();
 		toAssign.setAssigned(true);
 		toAssign.setUserId(assignee.getId());
 		repository.update(toAssign);
@@ -158,22 +165,12 @@ public class TaskServices {
 	}
 	
 	//DELETE methods
-	public int deleteAllTasks() {
-		try {
-			int numRows = repository.deleteAll();
-			return numRows;
-		} catch (Exception e) {
-			return -1;
-		}
+	public void deleteAllTasks() {
+		repository.deleteAll();
 	}
 	
-	public int deleteTask(Long id) {
-		try {
-			int result = repository.deleteById(id);
-			return result;			
-		} catch (Exception e) {
-			return -1;
-		}
+	public void deleteTask(Long id) {
+		repository.deleteById(id);
 	}
 
 

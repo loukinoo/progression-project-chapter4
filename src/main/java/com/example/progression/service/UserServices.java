@@ -1,6 +1,7 @@
 package com.example.progression.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,7 +32,10 @@ public class UserServices {
 	}
 	
 	public User getUserById(Long id) {
-		return repository.findById(id);
+		Optional<User> out = repository.findById(id);
+		if (out.isEmpty())
+			return null;
+		return out.get();
 	}
 	
 	public User getUserByUsername(String username) {
@@ -82,22 +86,11 @@ public class UserServices {
 	}
 	
 	//DELETE methods
-	public int deleteAllUsers() {
-		try {
-			int numRows = repository.deleteAll();
-			return numRows;
-		} catch (Exception e) {
-			return -1;
-		}
+	public void deleteAllUsers() {
+		repository.deleteAll();		
 	}
 	
-	public int deleteUser(Long id) {
-		try {
-			int result = repository.deleteById(id);
-			return result;
-		} catch (Exception e) {
-			return -1;
-		}
+	public void deleteUser(Long id) {
+		repository.deleteById(id);
 	}
-
 }
