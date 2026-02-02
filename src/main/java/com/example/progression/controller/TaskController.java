@@ -128,8 +128,6 @@ public class TaskController {
 		try {
 			List<Task> tasks = taskServices.getAssigned();
 			
-			if (tasks.isEmpty())
-				return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 			return new ResponseEntity<>(tasks, HttpStatus.OK);
 		} catch (Exception e) {
 			return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -140,9 +138,6 @@ public class TaskController {
 	public ResponseEntity<List<Task>> getNotAssigned() {
 		try {
 			List<Task> tasks = taskServices.getNotAssigned();
-			
-			if (tasks.isEmpty())
-				return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 			return new ResponseEntity<>(tasks, HttpStatus.OK);
 		} catch (UnauthorizedException e) {
 			return new ResponseEntity<>(null, HttpStatus.UNAUTHORIZED);
