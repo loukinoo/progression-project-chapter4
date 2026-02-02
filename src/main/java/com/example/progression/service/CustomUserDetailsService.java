@@ -9,13 +9,13 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.example.progression.model.User;
-import com.example.progression.repository.JdbcUserRepository;
+import com.example.progression.repository.UserRepository;
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
 	@Autowired
-	private JdbcUserRepository repository;
+	private UserRepository repository;
 
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {

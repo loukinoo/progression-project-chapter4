@@ -10,13 +10,13 @@ import com.example.progression.dto.UserToSaveDTO;
 import com.example.progression.exceptions.UnauthorizedException;
 import com.example.progression.mapper.UserMapper;
 import com.example.progression.model.User;
-import com.example.progression.repository.JdbcUserRepository;
+import com.example.progression.repository.UserRepository;
 
 @Service
 public class UserServices {
 	
 	@Autowired
-	private JdbcUserRepository repository;
+	private UserRepository repository;
 	@Autowired
 	private UserMapper mapper;
 	@Autowired
