@@ -196,20 +196,15 @@ public class TaskController {
 	
 	@DeleteMapping
 	public ResponseEntity<String> deleteAllTasks() {
-		int res = taskServices.deleteAllTasks();
-		if (res > -1)
-			return new ResponseEntity<>("Succesfully deleted "+res+" tasks.", HttpStatus.OK);
-		return new ResponseEntity<>("Cannot delete tasks.", HttpStatus.INTERNAL_SERVER_ERROR);
+		taskServices.deleteAllTasks();
+		return new ResponseEntity<>("Succesfully deleted all tasks.", HttpStatus.OK);
+		
 	}
 	
 	@DeleteMapping("/{id}")
 	public ResponseEntity<String> deleteTask(@PathVariable Long id) {
-		int res = taskServices.deleteTask(id);
-		if (res > 0)
-			return new ResponseEntity<>("Task succesfully deleted.", HttpStatus.OK);
-		if (res == 0)
-			return new ResponseEntity<>("Cannot find task with id="+id, HttpStatus.OK);
-		return new ResponseEntity<>("Cannot delete task.", HttpStatus.INTERNAL_SERVER_ERROR);
+		taskServices.deleteTask(id);
+		return new ResponseEntity<>("Task succesfully deleted.", HttpStatus.OK);
 	}
 
 }

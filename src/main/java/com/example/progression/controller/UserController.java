@@ -83,20 +83,14 @@ public class UserController {
 	
 	@DeleteMapping
 	public ResponseEntity<String> deleteAllUsers() {
-		int res = userServices.deleteAllUsers();
-		if (res > -1)
-			return new ResponseEntity<>("Succesfully deleted "+res+" users.", HttpStatus.OK);
-		return new ResponseEntity<>("Cannot delete users.", HttpStatus.INTERNAL_SERVER_ERROR);
+		userServices.deleteAllUsers();	
+		return new ResponseEntity<>("Succesfully deleted all users.", HttpStatus.OK);
 	}
 	
 	@DeleteMapping("/{id}")
 	public ResponseEntity<String> deleteUser(@PathVariable Long id) {
-		int res = userServices.deleteUser(id);
-		if (res > 0)
-			return new ResponseEntity<>("User succesfully deleted.", HttpStatus.OK);
-		if (res == 0)
-			return new ResponseEntity<>("Cannot find user with id="+id, HttpStatus.OK);
-		return new ResponseEntity<>("Cannot delete user.", HttpStatus.INTERNAL_SERVER_ERROR);
+		userServices.deleteUser(id);
+		return new ResponseEntity<>("User succesfully deleted.", HttpStatus.OK);
 	}
 
 }
