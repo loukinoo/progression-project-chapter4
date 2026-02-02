@@ -1,7 +1,12 @@
 package com.example.progression.model;
 
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "tasks")
 public class Task {
 	
+	@Id
 	private Long taskId;
 	private Long userId;
 	private boolean completed;

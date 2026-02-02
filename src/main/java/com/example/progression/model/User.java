@@ -1,7 +1,12 @@
 package com.example.progression.model;
 
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "users")
 public class User {
 
+	@Id
 	private Long id;
 	private boolean admin;
 	private String username;
